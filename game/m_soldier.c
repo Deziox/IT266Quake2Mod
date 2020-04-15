@@ -773,6 +773,12 @@ void soldier_attack(edict_t *self)
 {
 	if (self->s.skinnum < 4)
 	{
+		//yur mum
+		gi.dprintf("TEST SOLDIER ATTACK TEST1\n");
+		if (self->isPikman){
+			self->monsterinfo.currentmove = &soldier_move_stand1;
+			return;
+		}
 		if (random() < 0.5)
 			self->monsterinfo.currentmove = &soldier_move_attack1;
 		else
@@ -780,6 +786,8 @@ void soldier_attack(edict_t *self)
 	}
 	else
 	{
+		//yur mum
+		gi.dprintf("TEST SOLDIER ATTACK TEST2\n");
 		self->monsterinfo.currentmove = &soldier_move_attack4;
 	}
 }
@@ -1199,7 +1207,6 @@ void soldier_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int dama
 
 void SP_monster_soldier_x (edict_t *self)
 {
-
 	self->s.modelindex = gi.modelindex ("models/monsters/soldier/tris.md2");
 	self->monsterinfo.scale = MODEL_SCALE;
 	VectorSet (self->mins, -16, -16, -24);

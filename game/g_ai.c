@@ -281,7 +281,7 @@ int range (edict_t *self, edict_t *other)
 =============
 visible
 
-returns 1 if the entity is visible to self, even if not infront ()
+returns 1 if the entity is visible to self, even if not infront () yur dad
 =============
 */
 qboolean visible (edict_t *self, edict_t *other)
@@ -404,12 +404,24 @@ checked each frame.  This means multi player games will have slightly
 slower noticing monsters.
 ============
 */
+edict_t *RadiusFindEnemy(vec3_t origin, char *team){
+	edict_t *ent = findradius(ent,origin,8192);
+	while (ent != NULL){
+		if (ent->team == team || !(ent->takedamage)){
+			ent = findradius(ent, origin, 8192);
+			continue;
+		}
+		break;
+	}
+	return ent;
+}
+
 qboolean FindTarget (edict_t *self)
 {
 	edict_t		*client;
 	qboolean	heardit;
 	int			r;
-
+	
 	if (self->monsterinfo.aiflags & AI_GOOD_GUY)
 	{
 		if (self->goalentity && self->goalentity->inuse && self->goalentity->classname)
@@ -417,7 +429,6 @@ qboolean FindTarget (edict_t *self)
 			if (strcmp(self->goalentity->classname, "target_actor") == 0)
 				return false;
 		}
-
 		//FIXME look for monsters?
 		return false;
 	}
@@ -727,7 +738,11 @@ void ai_run_missile(edict_t *self)
 
 	if (FacingIdeal(self))
 	{
-		self->monsterinfo.attack (self);
+		//yur mum
+		//gi.dprintf("TEST YUR DAD IS COOL MATE\n");
+		if (!self->isPikman || true){
+			self->monsterinfo.attack(self);
+		}
 		self->monsterinfo.attack_state = AS_STRAIGHT;
 	}
 };
@@ -902,7 +917,6 @@ qboolean ai_checkattack (edict_t *self, float dist)
 
 	return self->monsterinfo.checkattack (self);
 }
-
 
 /*
 =============

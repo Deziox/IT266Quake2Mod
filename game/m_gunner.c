@@ -580,6 +580,7 @@ void gunner_refire_chain(edict_t *self)
 */
 void SP_monster_gunner (edict_t *self)
 {
+
 	if (deathmatch->value)
 	{
 		G_FreeEdict (self);

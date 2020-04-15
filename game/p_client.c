@@ -1323,6 +1323,10 @@ void ClientBegin (edict_t *ent)
 		// ClientConnect() time
 		G_InitEdict (ent);
 		ent->classname = "player";
+		
+		//yur mum
+		ent->team = "olimar";
+
 		InitClientResp (ent->client);
 		PutClientInServer (ent);
 	}

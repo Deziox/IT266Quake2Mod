@@ -818,7 +818,7 @@ void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, in
 	vec3_t	forward, right;
 	vec3_t	start;
 	vec3_t	offset;
-
+	
 	if (is_quad)
 		damage *= 4;
 	AngleVectors (ent->client->v_angle, forward, right, NULL);
@@ -828,8 +828,33 @@ void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, in
 
 	VectorScale (forward, -2, ent->client->kick_origin);
 	ent->client->kick_angles[0] = -1;
+	//yur mum start 1
+	//fire_blaster (ent, start, forward, damage*10000, 3000, effect, hyper);
+	//fire_grenade(ent, start, forward, damage * 10000, 3000, 3.0f, 100.0f);
+	//models/monsters/soldier/tris.md2
+	vec3_t up;
+	vec3_t	dir;
 
-	fire_blaster (ent, start, forward, damage, 1000, effect, hyper);
+	vectoangles(forward, dir);
+	AngleVectors(dir, forward, right, up);
+
+	edict_t *test;
+	test = G_Spawn();
+	VectorCopy(start, test->s.origin);
+	vec3_t forwardScale;
+	VectorScale(forward, 20.0f, forwardScale);
+	VectorAdd(test->s.origin, forwardScale, test->s.origin);
+	VectorScale(forward, 200, test->velocity);
+	//gi.dprintf("%s ENTITY TEST PRINT THING\n", ent->owner);
+	test->team = ent->team;
+	test->isPikman = true;
+	SP_monster_soldier(test);
+	gi.dprintf("%s Pikman TEST PRINT THING\n", test->team);
+	gi.linkentity(test);
+	
+	//walkmonster_start(test);
+
+	//yur mum end 1
 
 	// send muzzle flash
 	gi.WriteByte (svc_muzzleflash);

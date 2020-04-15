@@ -273,7 +273,7 @@ spawn_t	spawns[] = {
 ED_CallSpawn
 
 Finds the spawn function for the entity and calls it
-===============
+=============== yur dad
 */
 void ED_CallSpawn (edict_t *ent)
 {
@@ -485,6 +485,7 @@ void G_FindTeams (void)
 			continue;
 		chain = e;
 		e->teammaster = e;
+		gi.dprintf("YUR DAD LESBO %s\t%s\n", e->team,e->classname);
 		c++;
 		c2++;
 		for (j=i+1, e2=e+1 ; j < globals.num_edicts ; j++,e2++)
@@ -506,7 +507,7 @@ void G_FindTeams (void)
 		}
 	}
 
-	gi.dprintf ("%i teams with %i entities\n", c, c2);
+	gi.dprintf ("YUR MUM GEY YUR MUM GEY YUR MUM GEY YUR MUM GEY %i teams with %i entities\n", c, c2);
 }
 
 /*
@@ -515,7 +516,7 @@ SpawnEntities
 
 Creates a server's entity / program execution context by
 parsing textual entity definitions out of an ent file.
-==============
+============== yur dad
 */
 void SpawnEntities (char *mapname, char *entities, char *spawnpoint)
 {
