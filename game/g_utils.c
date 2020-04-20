@@ -169,7 +169,7 @@ Search for (string)targetname in all entities that
 match (string)self.target and call their .use function
 
 ==============================
-*/
+*///yur dad
 void G_UseTargets (edict_t *ent, edict_t *activator)
 {
 	edict_t		*t;

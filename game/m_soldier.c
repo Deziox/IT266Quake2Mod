@@ -768,14 +768,16 @@ mframe_t soldier_frames_attack6 [] =
 	ai_charge, 17, soldier_attack6_refire
 };
 mmove_t soldier_move_attack6 = {FRAME_runs01, FRAME_runs14, soldier_frames_attack6, soldier_run};
-
+//yur mum
 void soldier_attack(edict_t *self)
 {
 	if (self->s.skinnum < 4)
 	{
 		//yur mum
 		gi.dprintf("TEST SOLDIER ATTACK TEST1\n");
+		//gi.dprintf("SOLDIER TEST ENEMY: %s\n", self->enemy);
 		if (self->isPikman){
+			//gi.dprintf("TESTING STRING\nTESTING STRING\nTESTING STRING %s\n",self->enemy);
 			self->monsterinfo.currentmove = &soldier_move_stand1;
 			return;
 		}

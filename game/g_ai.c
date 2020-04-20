@@ -128,7 +128,7 @@ void ai_stand (edict_t *self, float dist)
 			FindTarget (self);
 		return;
 	}
-
+	
 	if (FindTarget (self))
 		return;
 	
@@ -333,6 +333,7 @@ void HuntTarget (edict_t *self)
 	vec3_t	vec;
 
 	self->goalentity = self->enemy;
+	gi.dprintf("ENEMY TEST hunt target: %s\n", self->enemy->classname);
 	if (self->monsterinfo.aiflags & AI_STAND_GROUND)
 		self->monsterinfo.stand (self);
 	else
@@ -448,8 +449,12 @@ qboolean FindTarget (edict_t *self)
 	if ((level.sight_entity_framenum >= (level.framenum - 1)) && !(self->spawnflags & 1) )
 	{
 		client = level.sight_entity;
-		if (client->enemy == self->enemy)
+		if (client->enemy == self->enemy)	
 		{
+			//yur mum
+			if (self->isPikman && (client->team != self->team)){
+				return true;
+			}
 			return false;
 		}
 	}

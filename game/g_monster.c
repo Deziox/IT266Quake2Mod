@@ -449,7 +449,10 @@ void monster_use (edict_t *self, edict_t *other, edict_t *activator)
 		return;
 	
 // delay reaction so if the monster is teleported, its sound is still heard
-	self->enemy = activator;
+	if (!self->isPikman && activator->team != self->team){
+		gi.dprintf("GOTHEREGOTHERE1\n");
+		self->enemy = activator;
+	}
 	FoundTarget (self);
 }
 
