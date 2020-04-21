@@ -126,7 +126,6 @@ edict_t *G_PickTarget (char *targetname)
 		gi.dprintf("G_PickTarget called with NULL targetname\n");
 		return NULL;
 	}
-
 	while(1)
 	{
 		ent = G_Find (ent, FOFS(targetname), targetname);

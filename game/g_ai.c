@@ -327,7 +327,7 @@ qboolean infront (edict_t *self, edict_t *other)
 
 
 //============================================================================
-
+//yur dad
 void HuntTarget (edict_t *self)
 {
 	vec3_t	vec;
@@ -344,7 +344,7 @@ void HuntTarget (edict_t *self)
 	if (!(self->monsterinfo.aiflags & AI_STAND_GROUND))
 		AttackFinished (self, 1);
 }
-
+//yur dad
 void FoundTarget (edict_t *self)
 {
 	// let other monsters see this monster for a while
@@ -362,6 +362,7 @@ void FoundTarget (edict_t *self)
 
 	if (!self->combattarget)
 	{
+		//gi.dprintf("GOT HERE YERR\n");
 		HuntTarget (self);
 		return;
 	}
@@ -405,16 +406,50 @@ checked each frame.  This means multi player games will have slightly
 slower noticing monsters.
 ============
 */
-edict_t *RadiusFindEnemy(vec3_t origin, char *team){
-	edict_t *ent = findradius(ent,origin,8192);
-	while (ent != NULL){
-		if (ent->team == team || !(ent->takedamage)){
-			ent = findradius(ent, origin, 8192);
+edict_t *RadiusFindEnemy(edict_t *ignore,vec3_t origin, char *team, edict_t *client){
+	edict_t *ent = NULL;
+	edict_t *monster = client;
+	int i = -1;
+	char* t = "t";
+	char buffer[1028];
+	float dist = 0.0f;
+	float shortestDist = 1000000.0f;
+
+	while (i++ < 1028){
+		//vsnprintf(buffer, 256, "%s%d", t, i);
+		sprintf(buffer, "%s%d", t,i);
+		gi.dprintf("test: %s\n",buffer);
+		
+		//return client;
+		ent = G_PickTarget(buffer);
+		
+		if (!ent)
 			continue;
+		gi.dprintf("ENT EQUALS: %s\n", ent->classname);
+		if (ent == ignore || ent->isPikman)
+			continue;
+		if (!ent->takedamage)
+			continue;
+		if (ent->client)
+			continue;
+		if (strcmp(ent->classname, "player") == 0)
+			continue;
+		if (strstr(ent->classname, "monster") != NULL){
+			dist = fabsf(sqrtf(pow(ent->s.origin[0] - origin[0], 2) + pow(ent->s.origin[1] - origin[1], 2) + pow(ent->s.origin[2] - origin[2], 2)));
+			if (dist < shortestDist){
+				monster = ent;
+				shortestDist = dist;
+			}
 		}
-		break;
 	}
-	return ent;
+	if (ent){
+		gi.dprintf("GOT HERE HERE HERE HERE %s\n",ent->classname);
+	}
+	else{
+		ent = client;
+	}
+	gi.dprintf("MONSTER: %s\t%f\n", monster->classname, dist);
+	return monster;
 }
 
 qboolean FindTarget (edict_t *self)
@@ -451,10 +486,6 @@ qboolean FindTarget (edict_t *self)
 		client = level.sight_entity;
 		if (client->enemy == self->enemy)	
 		{
-			//yur mum
-			if (self->isPikman && (client->team != self->team)){
-				return true;
-			}
 			return false;
 		}
 	}
@@ -504,45 +535,51 @@ qboolean FindTarget (edict_t *self)
 
 	if (!heardit)
 	{
-		r = range (self, client);
+		r = range(self, client);
 
 		if (r == RANGE_FAR)
 			return false;
 
-// this is where we would check invisibility
+		// this is where we would check invisibility
 
 		// is client in an spot too dark to be seen?
 		if (client->light_level <= 5)
 			return false;
 
-		if (!visible (self, client))
+		if (!visible(self, client))
 		{
 			return false;
 		}
 
 		if (r == RANGE_NEAR)
 		{
-			if (client->show_hostile < level.time && !infront (self, client))
+			if (client->show_hostile < level.time && !infront(self, client))
 			{
 				return false;
 			}
 		}
 		else if (r == RANGE_MID)
 		{
-			if (!infront (self, client))
+			if (!infront(self, client))
 			{
 				return false;
 			}
 		}
-
-		self->enemy = client;
+		//yur mum
+		if (!self->isPikman){
+			self->enemy = client;
+		}
+		else{
+			self->enemy = RadiusFindEnemy(self,self->s.origin,"olimar",client);
+			//self->enemy = client;
+		}
 
 		if (strcmp(self->enemy->classname, "player_noise") != 0)
 		{
+			gi.dprintf("GOT HERE TESTIES %s\n", self->enemy->classname);
 			self->monsterinfo.aiflags &= ~AI_SOUND_TARGET;
-
-			if (!self->enemy->client)
-			{
+			if (!self->enemy->client && !self->isPikman)
+			{//yur dad
 				self->enemy = self->enemy->enemy;
 				if (!self->enemy->client)
 				{
