@@ -1111,5 +1111,6 @@ struct edict_s
 	monsterinfo_t	monsterinfo;
 
 	qboolean isPikman;
+	edict_t     *pikmen[10];
 };
 

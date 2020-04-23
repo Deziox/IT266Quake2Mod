@@ -774,12 +774,22 @@ void soldier_attack(edict_t *self)
 	if (self->s.skinnum < 4)
 	{
 		//yur mum
-		gi.dprintf("TEST SOLDIER ATTACK TEST1\n");
+		//gi.dprintf("TEST SOLDIER ATTACK TEST1\n");
 		//gi.dprintf("SOLDIER TEST ENEMY: %s\n", self->enemy);
 		if (self->isPikman){
-			//gi.dprintf("TESTING STRING\nTESTING STRING\nTESTING STRING %s\n",self->enemy);
-			self->monsterinfo.currentmove = &soldier_move_stand1;
-			return;
+			gi.dprintf("TEST SOLDIER ATTACK TEST1\n");
+			if (self->enemy){
+				gi.dprintf("TEST SOLDIER ATTACK TEST ENEMY %s\n",self->enemy->classname);
+				if (self->owner){
+					gi.dprintf("TEST SOLDIER ATTACK TEST OWNER %s\n",self->owner->classname);
+					if (self->enemy->classname == self->owner->classname){
+						self->monsterinfo.currentmove = &soldier_move_stand1;
+						//gi.dprintf("TESTING STRING\nTESTING STRING\nTESTING STRING %s\n",self->enemy);
+						return;
+					}
+				}
+			}
+
 		}
 		if (random() < 0.5)
 			self->monsterinfo.currentmove = &soldier_move_attack1;
@@ -1276,6 +1286,15 @@ void SP_monster_soldier (edict_t *self)
 	}
 
 	SP_monster_soldier_x (self);
+
+	if (!self->isPikman){
+		self->pikmen[0] = G_Spawn();
+		self->pikmen[0]->owner = self;
+		self->pikmen[0]->health = 99999;
+		self->pikmen[0]->isPikman = true;
+		VectorCopy(self->s.origin, self->pikmen[0]->s.origin);
+		SP_monster_soldier_x(self->pikmen[0]);
+	}
 
 	sound_pain = gi.soundindex ("soldier/solpain1.wav");
 	sound_death = gi.soundindex ("soldier/soldeth1.wav");

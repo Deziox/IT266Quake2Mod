@@ -411,11 +411,11 @@ edict_t *RadiusFindEnemy(edict_t *ignore,vec3_t origin, char *team, edict_t *cli
 	edict_t *monster = client;
 	int i = -1;
 	char* t = "t";
-	char buffer[1028];
+	char buffer[10000];
 	float dist = 0.0f;
 	float shortestDist = 1000000.0f;
 
-	while (i++ < 1028){
+	while (i++ < 10000){
 		//vsnprintf(buffer, 256, "%s%d", t, i);
 		sprintf(buffer, "%s%d", t,i);
 		gi.dprintf("test: %s\n",buffer);
@@ -444,6 +444,53 @@ edict_t *RadiusFindEnemy(edict_t *ignore,vec3_t origin, char *team, edict_t *cli
 	}
 	if (ent){
 		gi.dprintf("GOT HERE HERE HERE HERE %s\n",ent->classname);
+	}
+	else{
+		ent = client;
+	}
+	gi.dprintf("MONSTER: %s\t%f\n", monster->classname, dist);
+	return monster;
+}
+
+//TODO Find owner
+edict_t *FindOwner(edict_t *ignore, vec3_t origin, char *team, edict_t *client){
+	edict_t *ent = NULL;
+	edict_t *monster = client;
+	int i = -1;
+	char* t = "t";
+	char buffer[10000];
+	float dist = 0.0f;
+	float shortestDist = 1000000.0f;
+
+	while (i++ < 10000){
+		//vsnprintf(buffer, 256, "%s%d", t, i);
+		sprintf(buffer, "%s%d", t, i);
+		gi.dprintf("test: %s\n", buffer);
+
+		//return client;
+		ent = G_PickTarget(buffer);
+
+		if (!ent)
+			continue;
+		gi.dprintf("ENT EQUALS: %s\n", ent->classname);
+		if (ent == ignore || ent->isPikman)
+			continue;
+		if (!ent->takedamage)
+			continue;
+		if (ent->client)
+			continue;
+		if (strcmp(ent->classname, "player") == 0)
+			continue;
+		if (strstr(ent->classname, "monster") != NULL){
+			dist = fabsf(sqrtf(pow(ent->s.origin[0] - origin[0], 2) + pow(ent->s.origin[1] - origin[1], 2) + pow(ent->s.origin[2] - origin[2], 2)));
+			if (dist < shortestDist){
+				monster = ent;
+				shortestDist = dist;
+			}
+		}
+	}
+	if (ent){
+		gi.dprintf("GOT HERE HERE HERE HERE %s\n", ent->classname);
 	}
 	else{
 		ent = client;
@@ -570,15 +617,20 @@ qboolean FindTarget (edict_t *self)
 			self->enemy = client;
 		}
 		else{
-			self->enemy = RadiusFindEnemy(self,self->s.origin,"olimar",client);
-			//self->enemy = client;
+			//self->enemy = RadiusFindEnemy(self,self->s.origin,"olimar",client);
+			if (self->owner->client){
+				self->enemy = client;
+			}
+			else{
+				self->enemy = self->owner;
+			}
 		}
 
-		if (strcmp(self->enemy->classname, "player_noise") != 0)
+		if (strcmp(self->enemy->classname, "player_noise") != 0 && !self->isPikman)
 		{
 			gi.dprintf("GOT HERE TESTIES %s\n", self->enemy->classname);
 			self->monsterinfo.aiflags &= ~AI_SOUND_TARGET;
-			if (!self->enemy->client && !self->isPikman)
+			if (!self->enemy->client)
 			{//yur dad
 				self->enemy = self->enemy->enemy;
 				if (!self->enemy->client)

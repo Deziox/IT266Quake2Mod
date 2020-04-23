@@ -54,7 +54,7 @@ target noise (bullet wall impacts)
 Monsters that don't directly see the player can move
 to a noise in hopes of seeing the player from there.
 ===============
-*/
+*///yur dad
 void PlayerNoise(edict_t *who, vec3_t where, int type)
 {
 	edict_t		*noise;
@@ -848,7 +848,20 @@ void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, in
 	//gi.dprintf("%s ENTITY TEST PRINT THING\n", ent->owner);
 	test->team = ent->team;
 	test->isPikman = true;
-	SP_monster_soldier(test);
+	edict_t *tempEnt = &g_edicts[0];
+	for (int i = 0; i < globals.num_edicts; i++, tempEnt++)
+	{
+		if (!tempEnt)
+			continue;
+		if (!tempEnt->client)
+			continue;
+		if (tempEnt->classname == "player"){
+			test->owner = tempEnt;
+		}
+		
+	}
+	test->health = 30;
+	SP_monster_soldier_x(test);
 	gi.dprintf("%s Pikman TEST PRINT THING\n", test->team);
 	gi.linkentity(test);
 	
