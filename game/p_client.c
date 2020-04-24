@@ -1292,7 +1292,8 @@ ClientBegin
 called when a client has finished connecting, and is ready
 to be placed into the game.  This will happen every level load.
 ============
-*/
+*///yur mum
+
 void ClientBegin (edict_t *ent)
 {
 	int		i;
@@ -1324,11 +1325,13 @@ void ClientBegin (edict_t *ent)
 		G_InitEdict (ent);
 		ent->classname = "player";
 		
-		//yur mum
+		//yur mum start
 		ent->team = "olimar";
 
+		//yur mum end
 		InitClientResp (ent->client);
 		PutClientInServer (ent);
+
 	}
 
 	if (level.intermissiontime)
@@ -1347,6 +1350,20 @@ void ClientBegin (edict_t *ent)
 
 			gi.bprintf (PRINT_HIGH, "%s entered the game\n", ent->client->pers.netname);
 		}
+	}
+
+	for (int i = 0; i < 10; i++){
+		ent->pikmen[i] = G_Spawn();
+		VectorCopy(ent->s.origin, ent->pikmen[i]->s.origin);
+		ent->pikmen[i]->s.origin[1] += (34 * i + 32);
+		ent->pikmen[i]->team = ent->team;
+		ent->pikmen[i]->owner = ent;
+		ent->pikmen[i]->isPikman = true;
+		ent->pikmen[i]->gravity = 0.5f;
+		ent->pikmen[i]->health = 999999;
+		//ent->pikmen[i]->touch = pikmin_touch;
+		SP_monster_soldier_x(ent->pikmen[i]);
+		gi.linkentity(ent->pikmen[i]);
 	}
 
 	// make sure all view stuff is valid

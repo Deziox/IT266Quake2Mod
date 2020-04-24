@@ -813,6 +813,52 @@ BLASTER / HYPERBLASTER
 ======================================================================
 */
 
+//yur mum
+void pikmin_touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
+{
+	int		mod;
+
+	if (other == self->owner)
+		return;
+
+	if (surf && (surf->flags & SURF_SKY))
+	{
+		//G_FreeEdict(self);
+		return;
+	}
+
+	//if (self->owner->client)
+	//	PlayerNoise(self->owner, self->s.origin, PNOISE_IMPACT);
+
+	if (other->takedamage && !other->isPikman)
+	{
+		mod = MOD_BLASTER;
+		//T_Damage(other, self, self->owner, self->velocity, self->s.origin, plane->normal, self->dmg, 1, DAMAGE_ENERGY, mod);
+		for (int i = 31; i >= 0; i--){
+			if (other->pikmen[i]){
+				G_FreeEdict(other->pikmen[i]);
+				other->pikmen[i] = NULL;
+				break;
+			}
+		}
+	}
+	else
+	{
+		gi.WriteByte(svc_temp_entity);
+		gi.WriteByte(TE_BLASTER);
+		gi.WritePosition(self->s.origin);
+		if (!plane)
+			gi.WriteDir(vec3_origin);
+		else
+			gi.WriteDir(plane->normal);
+		gi.multicast(self->s.origin, MULTICAST_PVS);
+	}
+
+	gi.dprintf("COLLISION TEST %s\n", other->classname);
+	self->touch = NULL;
+	//G_FreeEdict(self);
+}
+
 void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, int effect)
 {
 	vec3_t	forward, right;
@@ -844,10 +890,11 @@ void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, in
 	vec3_t forwardScale;
 	VectorScale(forward, 20.0f, forwardScale);
 	VectorAdd(test->s.origin, forwardScale, test->s.origin);
-	VectorScale(forward, 200, test->velocity);
+	VectorScale(forward, 1500, test->velocity);
 	//gi.dprintf("%s ENTITY TEST PRINT THING\n", ent->owner);
 	test->team = ent->team;
 	test->isPikman = true;
+	test->gravity = 0.5f;
 	edict_t *tempEnt = &g_edicts[0];
 	for (int i = 0; i < globals.num_edicts; i++, tempEnt++)
 	{
@@ -857,10 +904,12 @@ void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, in
 			continue;
 		if (tempEnt->classname == "player"){
 			test->owner = tempEnt;
+			break;
 		}
 		
 	}
-	test->health = 30;
+	test->health = 999999;
+	test->touch = pikmin_touch;
 	SP_monster_soldier_x(test);
 	gi.dprintf("%s Pikman TEST PRINT THING\n", test->team);
 	gi.linkentity(test);

@@ -1219,10 +1219,22 @@ void soldier_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int dama
 
 void SP_monster_soldier_x (edict_t *self)
 {
-	self->s.modelindex = gi.modelindex ("models/monsters/soldier/tris.md2");
+	if (self->isPikman){
+		if (self->owner->classname == "player"){
+			self->s.modelindex = gi.modelindex("players/pikmin/pikmin2.md2");
+		}
+		else{
+			self->s.modelindex = gi.modelindex("players/pikmin/pikmin1.md2");
+		}
+	}
+	else{
+		self->s.modelindex = gi.modelindex("models/monsters/soldier/tris.md2");
+	}
+
 	self->monsterinfo.scale = MODEL_SCALE;
-	VectorSet (self->mins, -16, -16, -24);
-	VectorSet (self->maxs, 16, 16, 32);
+	VectorSet(self->mins, -16, -16, -24);
+	VectorSet(self->maxs, 16, 16, 32);
+
 	self->movetype = MOVETYPE_STEP;
 	self->solid = SOLID_BBOX;
 
