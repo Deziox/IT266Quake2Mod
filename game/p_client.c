@@ -1355,15 +1355,22 @@ void ClientBegin (edict_t *ent)
 	for (int i = 0; i < 10; i++){
 		ent->pikmen[i] = G_Spawn();
 		VectorCopy(ent->s.origin, ent->pikmen[i]->s.origin);
-		ent->pikmen[i]->s.origin[1] += (34 * i + 32);
-		ent->pikmen[i]->team = ent->team;
+		ent->pikmen[i]->s.origin[1] += (38 * i + 32);
+		ent->pikmen[i]->s.origin[0] -= (10 * i + 32);
+		ent->pikmen[i]->s.origin[2] += 30;
+		//ent->pikmen[i]->team = ent->team;
 		ent->pikmen[i]->owner = ent;
 		ent->pikmen[i]->isPikman = true;
 		ent->pikmen[i]->gravity = 0.5f;
-		ent->pikmen[i]->health = 999999;
+		ent->pikmen[i]->health = 9999999;
+		
 		//ent->pikmen[i]->touch = pikmin_touch;
+		//ent->pikmen[i]->enemy = ent;
 		SP_monster_soldier_x(ent->pikmen[i]);
 		gi.linkentity(ent->pikmen[i]);
+		//ent->pikmen[i]->use(ent->pikmen[i],ent->pikmen[i],ent->enemy);
+		walkmonster_start(ent->pikmen[i]);
+		ent->pikmenSize += 1;
 	}
 
 	// make sure all view stuff is valid

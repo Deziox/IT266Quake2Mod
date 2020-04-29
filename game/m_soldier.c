@@ -778,11 +778,13 @@ void soldier_attack(edict_t *self)
 		//gi.dprintf("SOLDIER TEST ENEMY: %s\n", self->enemy);
 		if (self->isPikman){
 			gi.dprintf("TEST SOLDIER ATTACK TEST1\n");
+			self->monsterinfo.currentmove = &soldier_move_stand1;
+			return;
 			if (self->enemy){
 				gi.dprintf("TEST SOLDIER ATTACK TEST ENEMY %s\n",self->enemy->classname);
 				if (self->owner){
 					gi.dprintf("TEST SOLDIER ATTACK TEST OWNER %s\n",self->owner->classname);
-					if (self->enemy->classname == self->owner->classname){
+					if (self->enemy->classname == self->owner->classname || self->enemy->isPikman){
 						self->monsterinfo.currentmove = &soldier_move_stand1;
 						//gi.dprintf("TESTING STRING\nTESTING STRING\nTESTING STRING %s\n",self->enemy);
 						return;
@@ -1221,19 +1223,21 @@ void SP_monster_soldier_x (edict_t *self)
 {
 	if (self->isPikman){
 		if (self->owner->classname == "player"){
-			self->s.modelindex = gi.modelindex("players/pikmin/pikmin2.md2");
-		}
-		else{
 			self->s.modelindex = gi.modelindex("players/pikmin/pikmin1.md2");
 		}
+		else{
+			self->s.modelindex = gi.modelindex("models/monsters/soldier/tris.md2");
+		}
+		VectorSet(self->mins, -8, -8, -7);
+		VectorSet(self->maxs, 8, 8, 8);
 	}
 	else{
 		self->s.modelindex = gi.modelindex("models/monsters/soldier/tris.md2");
+		VectorSet(self->mins, -16, -16, -24);
+		VectorSet(self->maxs, 16, 16, 32);
 	}
 
 	self->monsterinfo.scale = MODEL_SCALE;
-	VectorSet(self->mins, -16, -16, -24);
-	VectorSet(self->maxs, 16, 16, 32);
 
 	self->movetype = MOVETYPE_STEP;
 	self->solid = SOLID_BBOX;
@@ -1266,6 +1270,23 @@ void SP_monster_soldier_x (edict_t *self)
 
 /*QUAKED monster_soldier_light (1 .5 0) (-16 -16 -24) (16 16 32) Ambush Trigger_Spawn Sight
 */
+void soldier_pikmin_init(edict_t *self){
+	if (!self->isPikman){
+		//self->pikmenSize = 0;
+		for (int i = 0; i < (rand() % 6 + 1); i++){
+			self->pikmen[i] = G_Spawn();
+			self->pikmen[i]->owner = self;
+			self->pikmen[i]->health = 99999;
+			self->pikmen[i]->isPikman = true;
+			VectorCopy(self->s.origin, self->pikmen[i]->s.origin);
+			SP_monster_soldier_x(self->pikmen[i]);
+			self->pikmenSize += 1;
+		}
+		gi.dprintf("PIKMEN SOLDIER SIZE: %d\n", self->pikmenSize);
+		PikminTest(self);
+	}
+}
+
 void SP_monster_soldier_light (edict_t *self)
 {
 	if (deathmatch->value)
@@ -1281,6 +1302,8 @@ void SP_monster_soldier_light (edict_t *self)
 	gi.modelindex ("models/objects/laser/tris.md2");
 	gi.soundindex ("misc/lasfly.wav");
 	gi.soundindex ("soldier/solatck2.wav");
+
+	soldier_pikmin_init(self);
 
 	self->s.skinnum = 0;
 	self->health = 20;
@@ -1299,14 +1322,7 @@ void SP_monster_soldier (edict_t *self)
 
 	SP_monster_soldier_x (self);
 
-	if (!self->isPikman){
-		self->pikmen[0] = G_Spawn();
-		self->pikmen[0]->owner = self;
-		self->pikmen[0]->health = 99999;
-		self->pikmen[0]->isPikman = true;
-		VectorCopy(self->s.origin, self->pikmen[0]->s.origin);
-		SP_monster_soldier_x(self->pikmen[0]);
-	}
+	soldier_pikmin_init(self);
 
 	sound_pain = gi.soundindex ("soldier/solpain1.wav");
 	sound_death = gi.soundindex ("soldier/soldeth1.wav");
@@ -1332,6 +1348,8 @@ void SP_monster_soldier_ss (edict_t *self)
 	sound_pain_ss = gi.soundindex ("soldier/solpain3.wav");
 	sound_death_ss = gi.soundindex ("soldier/soldeth3.wav");
 	gi.soundindex ("soldier/solatck3.wav");
+
+	soldier_pikmin_init(self);
 
 	self->s.skinnum = 4;
 	self->health = 40;

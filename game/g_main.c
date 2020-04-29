@@ -343,6 +343,51 @@ void ExitLevel (void)
 
 }
 
+//yur mum
+void PikminTest(edict_t *ent){
+	gi.dprintf("Pikmin list test: \n");
+	for (int i = 0; i < 128; i++){
+		if (!ent->pikmen[i]){
+			gi.dprintf("\t%d) NULL\t", i);
+		}
+		else{
+			gi.dprintf("\t%d) %s\t", i, ent->pikmen[i]->classname);
+		}
+	}
+}
+
+void HandlePikminList(edict_t *ent){
+	edict_t *pikmenTemp = ent->pikmen[0];
+	edict_t *swapTemp;
+	for (int i = ent->pikmenSize - 1; i >= 0;i--){
+		swapTemp = ent->pikmen[i];
+		ent->pikmen[i] = pikmenTemp;
+		pikmenTemp = swapTemp;
+	}
+}
+
+void LosePikmin(edict_t *ent){
+	if (ent->pikmenSize <= 0){
+		if (ent->pikmenSize < 0){
+			gi.dprintf("PIKMEN SIZE NEGATIVE\n");
+		}
+		gi.dprintf("EMPTY PIKMIN SIZE: %d\n",ent->pikmenSize);
+		return;
+	}
+	gi.dprintf("LOST ONE PIKMAN: %d\t%d\n", (ent->pikmenSize-1),ent->pikmenSize);
+	//gi.unlinkentity(ent->pikmen[ent->pikmenSize-1]);
+	//PikminTest(ent);
+	G_FreeEdict(ent->pikmen[0]);
+	HandlePikminList(ent);
+	//PikminTest(ent);
+	//gi.error("stopped");
+	//ent->pikmen[ent->pikmenSize-1] = NULL;
+	ent->pikmenSize -= 1;
+
+	if (ent->pikmen[0])
+		gi.dprintf("WAAAAAAAAAAAAAAAA: %d\n", ent->pikmenSize);
+}
+
 /*
 ================
 G_RunFrame

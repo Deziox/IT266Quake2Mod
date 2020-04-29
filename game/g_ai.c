@@ -679,6 +679,10 @@ qboolean FindTarget (edict_t *self)
 //
 // got one
 //
+	//yur mum
+	//if (self->isPikman){
+	//	self->enemy = self->owner;
+	//}
 	FoundTarget (self);
 
 	if (!(self->monsterinfo.aiflags & AI_SOUND_TARGET) && (self->monsterinfo.sight))

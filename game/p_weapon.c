@@ -818,27 +818,40 @@ void pikmin_touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *su
 {
 	int		mod;
 
-	if (other == self->owner)
-		return;
-
-	if (surf && (surf->flags & SURF_SKY))
-	{
-		//G_FreeEdict(self);
-		return;
-	}
-
 	//if (self->owner->client)
 	//	PlayerNoise(self->owner, self->s.origin, PNOISE_IMPACT);
 
 	if (other->takedamage && !other->isPikman)
 	{
-		mod = MOD_BLASTER;
 		//T_Damage(other, self, self->owner, self->velocity, self->s.origin, plane->normal, self->dmg, 1, DAMAGE_ENERGY, mod);
-		for (int i = 31; i >= 0; i--){
-			if (other->pikmen[i]){
-				G_FreeEdict(other->pikmen[i]);
-				other->pikmen[i] = NULL;
-				break;
+		//for (int i = 31; i >= 0; i--){
+		//	if (other->pikmen[i]){
+		//		G_FreeEdict(other->pikmen[i]);
+		//		other->pikmen[i] = NULL;
+		//		break;
+		//	}
+		//}
+		if (other->pikmenSize > 0){
+			gi.dprintf("LOSE PIKMEN TEST: %d\n", other->pikmenSize);
+			LosePikmin(other);
+			//other->die(other, self->owner, self->owner, 99999, other->s.origin);
+		}
+		else{
+			if (self->pikmenSize == 128){
+				other->die(other, self->owner, self->owner, 99999, other->s.origin);
+			}
+			else{
+				VectorSet(self->mins, -8, -8, -7);
+				VectorSet(self->maxs, 8, 8, 8);
+				other->s.modelindex = gi.modelindex("players/pikmin/pikmin1.md2");
+				other->isPikman = true;
+				other->owner = self;
+				other->touch = NULL;
+				other->gravity = 0.5f;
+				other->health = 9999999;
+				other->solid = SOLID_NOT;
+				self->pikmen[self->pikmenSize] = other;
+				self->pikmenSize += 1;
 			}
 		}
 	}
@@ -856,7 +869,11 @@ void pikmin_touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *su
 
 	gi.dprintf("COLLISION TEST %s\n", other->classname);
 	self->touch = NULL;
+	//self->think = monster_think;
 	//G_FreeEdict(self);
+}
+
+void player_pikmin_think(edict_t *ent){
 }
 
 void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, int effect)
@@ -884,18 +901,20 @@ void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, in
 	vectoangles(forward, dir);
 	AngleVectors(dir, forward, right, up);
 
-	edict_t *test;
-	test = G_Spawn();
-	VectorCopy(start, test->s.origin);
+	//edict_t *test;
+	//test = G_Spawn();
+	VectorCopy(start, ent->pikmen[0]->s.origin);
 	vec3_t forwardScale;
 	VectorScale(forward, 20.0f, forwardScale);
-	VectorAdd(test->s.origin, forwardScale, test->s.origin);
-	VectorScale(forward, 1500, test->velocity);
+	//VectorAdd(ent->pikmen[0]->s.origin, forwardScale, ent->pikmen[0]->s.origin);
+	VectorScale(forward, 1500, ent->pikmen[0]->velocity);
+	//ent->pikmen[0]->think = player_pikmin_think;
 	//gi.dprintf("%s ENTITY TEST PRINT THING\n", ent->owner);
-	test->team = ent->team;
-	test->isPikman = true;
-	test->gravity = 0.5f;
-	edict_t *tempEnt = &g_edicts[0];
+	//test->team = ent->team;
+	//test->isPikman = true;
+	//test->gravity = 0.5f;
+	//edict_t *tempEnt = &g_edicts[0];
+	/*
 	for (int i = 0; i < globals.num_edicts; i++, tempEnt++)
 	{
 		if (!tempEnt)
@@ -907,12 +926,13 @@ void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, in
 			break;
 		}
 		
-	}
-	test->health = 999999;
-	test->touch = pikmin_touch;
-	SP_monster_soldier_x(test);
-	gi.dprintf("%s Pikman TEST PRINT THING\n", test->team);
-	gi.linkentity(test);
+	}*/
+	//test->health = 999999;
+	ent->pikmen[0]->touch = pikmin_touch;
+	HandlePikminList(ent);
+	//SP_monster_soldier_x(test);
+	//gi.dprintf("%s Pikman TEST PRINT THING\n", test->team);
+	//gi.linkentity(test);
 	
 	//walkmonster_start(test);
 

@@ -453,6 +453,9 @@ void monster_use (edict_t *self, edict_t *other, edict_t *activator)
 		gi.dprintf("GOTHEREGOTHERE1\n");
 		self->enemy = activator;
 	}
+	else if (self->isPikman){
+		self->enemy = self->owner;
+	}
 	FoundTarget (self);
 }
 
