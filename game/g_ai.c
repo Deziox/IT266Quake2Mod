@@ -719,6 +719,10 @@ qboolean M_CheckAttack (edict_t *self)
 	float	chance;
 	trace_t	tr;
 
+	if (self->isPikman){
+		return false;
+	}
+
 	if (self->enemy->health > 0)
 	{
 	// see if any entities are in the way of the shot

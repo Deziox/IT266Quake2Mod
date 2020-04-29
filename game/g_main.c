@@ -346,7 +346,7 @@ void ExitLevel (void)
 //yur mum
 void PikminTest(edict_t *ent){
 	gi.dprintf("Pikmin list test: \n");
-	for (int i = 0; i < 128; i++){
+	for (int i = 0; i < 32; i++){
 		if (!ent->pikmen[i]){
 			gi.dprintf("\t%d) NULL\t", i);
 		}
@@ -376,10 +376,10 @@ void LosePikmin(edict_t *ent){
 	}
 	gi.dprintf("LOST ONE PIKMAN: %d\t%d\n", (ent->pikmenSize-1),ent->pikmenSize);
 	//gi.unlinkentity(ent->pikmen[ent->pikmenSize-1]);
-	//PikminTest(ent);
+	PikminTest(ent);
 	G_FreeEdict(ent->pikmen[0]);
 	HandlePikminList(ent);
-	//PikminTest(ent);
+	PikminTest(ent);
 	//gi.error("stopped");
 	//ent->pikmen[ent->pikmenSize-1] = NULL;
 	ent->pikmenSize -= 1;

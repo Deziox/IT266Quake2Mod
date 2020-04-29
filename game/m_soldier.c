@@ -779,7 +779,7 @@ void soldier_attack(edict_t *self)
 		if (self->isPikman){
 			gi.dprintf("TEST SOLDIER ATTACK TEST1\n");
 			self->monsterinfo.currentmove = &soldier_move_stand1;
-			return;
+			return;/*
 			if (self->enemy){
 				gi.dprintf("TEST SOLDIER ATTACK TEST ENEMY %s\n",self->enemy->classname);
 				if (self->owner){
@@ -790,7 +790,7 @@ void soldier_attack(edict_t *self)
 						return;
 					}
 				}
-			}
+			}*/
 
 		}
 		if (random() < 0.5)
@@ -1223,10 +1223,10 @@ void SP_monster_soldier_x (edict_t *self)
 {
 	if (self->isPikman){
 		if (self->owner->classname == "player"){
-			self->s.modelindex = gi.modelindex("players/pikmin/pikmin1.md2");
+			self->s.modelindex = gi.modelindex("players/pikmin/pikmin1wskin.md2");
 		}
 		else{
-			self->s.modelindex = gi.modelindex("models/monsters/soldier/tris.md2");
+			self->s.modelindex = gi.modelindex("players/pikmin/pikmin2.md2");
 		}
 		VectorSet(self->mins, -8, -8, -7);
 		VectorSet(self->maxs, 8, 8, 8);

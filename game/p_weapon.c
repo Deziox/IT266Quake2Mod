@@ -814,7 +814,7 @@ BLASTER / HYPERBLASTER
 */
 
 //yur mum
-void pikmin_touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
+void pikmin_touch_player(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
 {
 	int		mod;
 
@@ -850,8 +850,10 @@ void pikmin_touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *su
 				other->gravity = 0.5f;
 				other->health = 9999999;
 				other->solid = SOLID_NOT;
-				self->pikmen[self->pikmenSize] = other;
-				self->pikmenSize += 1;
+				PikminTest(self->owner);
+				self->pikmen[self->owner->pikmenSize] = other;
+				self->owner->pikmenSize += 1;
+				PikminTest(self->owner);
 			}
 		}
 	}
@@ -928,7 +930,7 @@ void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, in
 		
 	}*/
 	//test->health = 999999;
-	ent->pikmen[0]->touch = pikmin_touch;
+	ent->pikmen[0]->touch = pikmin_touch_player;
 	HandlePikminList(ent);
 	//SP_monster_soldier_x(test);
 	//gi.dprintf("%s Pikman TEST PRINT THING\n", test->team);

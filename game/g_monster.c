@@ -23,14 +23,72 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 // monster weapons
 //
+void pikmin_touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
+{
+	int		mod;
 
+	//if (self->owner->client)
+	//	PlayerNoise(self->owner, self->s.origin, PNOISE_IMPACT);
+
+	if (other->takedamage && !other->isPikman)
+	{
+		if (other->pikmenSize > 0){
+			gi.dprintf("LOSE PIKMEN TEST: %d\n", other->pikmenSize);
+			LosePikmin(other);
+		}
+		else{
+			if (self->pikmenSize == 128){
+				other->die(other, self->owner, self->owner, 99999, other->s.origin);
+			}
+			else{
+				VectorSet(self->mins, -8, -8, -7);
+				VectorSet(self->maxs, 8, 8, 8);
+				other->s.modelindex = gi.modelindex("players/pikmin/pikmin1.md2");
+				other->isPikman = true;
+				other->owner = self;
+				other->touch = NULL;
+				other->gravity = 0.5f;
+				other->health = 9999999;
+				other->solid = SOLID_NOT;
+				self->pikmen[self->pikmenSize] = other;
+				self->pikmenSize += 1;
+			}
+		}
+	}
+	else
+	{
+		gi.WriteByte(svc_temp_entity);
+		gi.WriteByte(TE_BLASTER);
+		gi.WritePosition(self->s.origin);
+		if (!plane)
+			gi.WriteDir(vec3_origin);
+		else
+			gi.WriteDir(plane->normal);
+		gi.multicast(self->s.origin, MULTICAST_PVS);
+	}
+
+	gi.dprintf("COLLISION TEST %s\n", other->classname);
+	self->touch = NULL;
+	//self->think = monster_think;
+	//G_FreeEdict(self);
+}
 //FIXME mosnters should call these with a totally accurate direction
 // and we can mess it up based on skill.  Spread should be for normal
 // and we can tighten or loosen based on skill.  We could muck with
 // the damages too, but I'm not sure that's such a good idea.
 void monster_fire_bullet (edict_t *self, vec3_t start, vec3_t dir, int damage, int kick, int hspread, int vspread, int flashtype)
 {
-	fire_bullet (self, start, dir, damage, kick, hspread, vspread, MOD_UNKNOWN);
+	if (self->pikmenSize > 0){
+		VectorCopy(start, self->pikmen[0]->s.origin);
+		vec3_t forwardScale;
+		VectorScale(dir, 20.0f, forwardScale);
+		VectorScale(dir, 1500, self->pikmen[0]->velocity);
+		self->pikmen[0]->touch = pikmin_touch;
+		HandlePikminList(self);
+	}
+	else{
+		fire_bullet(self, start, dir, damage, kick, hspread, vspread, MOD_UNKNOWN);
+	}
 
 	gi.WriteByte (svc_muzzleflash2);
 	gi.WriteShort (self - g_edicts);
@@ -40,7 +98,18 @@ void monster_fire_bullet (edict_t *self, vec3_t start, vec3_t dir, int damage, i
 
 void monster_fire_shotgun (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int kick, int hspread, int vspread, int count, int flashtype)
 {
-	fire_shotgun (self, start, aimdir, damage, kick, hspread, vspread, count, MOD_UNKNOWN);
+	//yur mum
+	if (self->pikmenSize > 0){
+		VectorCopy(start, self->pikmen[0]->s.origin);
+		vec3_t forwardScale;
+		VectorScale(aimdir, 20.0f, forwardScale);
+		VectorScale(aimdir, 1500, self->pikmen[0]->velocity);
+		self->pikmen[0]->touch = pikmin_touch;
+		HandlePikminList(self);
+	}
+	else{
+		fire_shotgun(self, start, aimdir, damage, kick, hspread, vspread, count, MOD_UNKNOWN);
+	}
 
 	gi.WriteByte (svc_muzzleflash2);
 	gi.WriteShort (self - g_edicts);
@@ -50,7 +119,18 @@ void monster_fire_shotgun (edict_t *self, vec3_t start, vec3_t aimdir, int damag
 
 void monster_fire_blaster (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, int flashtype, int effect)
 {
-	fire_blaster (self, start, dir, damage, speed, effect, false);
+	//yur mum
+	if (self->pikmenSize > 0){
+		VectorCopy(start, self->pikmen[0]->s.origin);
+		vec3_t forwardScale;
+		VectorScale(dir, 20.0f, forwardScale);
+		VectorScale(dir, 1500, self->pikmen[0]->velocity);
+		self->pikmen[0]->touch = pikmin_touch;
+		HandlePikminList(self);
+	}
+	else{
+		fire_blaster(self, start, dir, damage, speed, effect, false);
+	}
 
 	gi.WriteByte (svc_muzzleflash2);
 	gi.WriteShort (self - g_edicts);
