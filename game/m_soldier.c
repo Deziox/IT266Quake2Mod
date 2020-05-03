@@ -1270,7 +1270,8 @@ void SP_monster_soldier_x (edict_t *self)
 /*QUAKED monster_soldier_light (1 .5 0) (-16 -16 -24) (16 16 32) Ambush Trigger_Spawn Sight
 */
 void soldier_pikmin_init(edict_t *self){
-		char *pikminTypes[6] = { "icepikmin", "slidypikmin", "bombpikmin", "bouncypikmin", "poisonpikmin", "regularpikmin" };
+		//char *pikminTypes[6] = { "icepikmin", "slidypikmin", "bombpikmin", "bouncypikmin", "poisonpikmin", "regularpikmin" };
+	char *pikminTypes[6] = { "gravitypikmin", "gravitypikmin", "gravitypikmin", "gravitypikmin", "gravitypikmin", "gravitypikmin" };
 		//self->pikmenSize = 0;
 		for (int i = 0; i < (rand() % 6 + 1); i++){
 			self->pikmen[i] = G_Spawn();

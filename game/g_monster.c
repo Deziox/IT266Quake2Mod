@@ -32,6 +32,13 @@ void pikmin_touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *su
 
 	if (other->takedamage && !other->isPikman)
 	{
+		if (self->classname == "icepikmin" && other->client && !other->frozen){
+			other->frozen = true;
+			other->freezeTimer = 80;
+			gi.dprintf("frozen timer: %d\n", other->freezeTimer);
+			return;
+		}
+
 		if (other->pikmenSize > 1){
 			gi.dprintf("LOSE PIKMEN TEST: %d\n", other->pikmenSize);
 			LosePikmin(other);
@@ -83,7 +90,13 @@ void monster_fire_bullet (edict_t *self, vec3_t start, vec3_t dir, int damage, i
 		VectorCopy(start, self->pikmen[0]->s.origin);
 		vec3_t forwardScale;
 		VectorScale(dir, 20.0f, forwardScale);
-		VectorScale(dir, 1500, self->pikmen[0]->velocity);
+		if (self->pikmen[0]->classname == "gravitypikmin"){
+			self->pikmen[0]->gravity = 0.00001;
+			VectorScale(dir, 800, self->pikmen[0]->velocity);
+		}
+		else{
+			VectorScale(dir, 1500, self->pikmen[0]->velocity);
+		}
 		self->pikmen[0]->touch = pikmin_touch;
 		HandlePikminList(self);
 	}
@@ -104,7 +117,13 @@ void monster_fire_shotgun (edict_t *self, vec3_t start, vec3_t aimdir, int damag
 		VectorCopy(start, self->pikmen[0]->s.origin);
 		vec3_t forwardScale;
 		VectorScale(aimdir, 20.0f, forwardScale);
-		VectorScale(aimdir, 1500, self->pikmen[0]->velocity);
+		if (self->pikmen[0]->classname == "gravitypikmin"){
+			self->pikmen[0]->gravity = 0.00001;
+			VectorScale(aimdir, 800, self->pikmen[0]->velocity);
+		}
+		else{
+			VectorScale(aimdir, 1500, self->pikmen[0]->velocity);
+		}
 		self->pikmen[0]->touch = pikmin_touch;
 		HandlePikminList(self);
 	}
@@ -125,7 +144,13 @@ void monster_fire_blaster (edict_t *self, vec3_t start, vec3_t dir, int damage, 
 		VectorCopy(start, self->pikmen[0]->s.origin);
 		vec3_t forwardScale;
 		VectorScale(dir, 20.0f, forwardScale);
-		VectorScale(dir, 1500, self->pikmen[0]->velocity);
+		if (self->pikmen[0]->classname == "gravitypikmin"){
+			self->pikmen[0]->gravity = 0.00001;
+			VectorScale(dir, 800, self->pikmen[0]->velocity);
+		}
+		else{
+			VectorScale(dir, 1500, self->pikmen[0]->velocity);
+		}
 		self->pikmen[0]->touch = pikmin_touch;
 		HandlePikminList(self);
 	}
@@ -500,9 +525,7 @@ void M_MoveFrame (edict_t *self)
 void monster_think (edict_t *self)
 {
 	if (self->frozen){ 
-		gi.dprintf("frozen timer 1: %d\n", self->freezeTimer);
 		self->freezeTimer -= ((int)level.time % 2 == 0 ? 1:0);
-		gi.dprintf("frozen timer 2: %d\n", self->freezeTimer);
 		if (self->freezeTimer <= 0){
 			self->frozen = false;
 			self->freezeTimer = 30;

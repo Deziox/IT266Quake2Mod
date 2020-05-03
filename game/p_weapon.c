@@ -825,7 +825,7 @@ void pikmin_touch_player(edict_t *self, edict_t *other, cplane_t *plane, csurfac
 	if (other->takedamage && !other->isPikman)
 	{
 		
-		if (self->classname == "icepikmin"){
+		if (self->classname == "icepikmin" && !other->frozen){
 			other->frozen = true;
 			other->freezeTimer = 30;
 			gi.dprintf("frozen timer: %d\n", other->freezeTimer);
@@ -912,8 +912,15 @@ void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, in
 	vec3_t forwardScale;
 	VectorScale(forward, 20.0f, forwardScale);
 	//VectorAdd(ent->pikmen[0]->s.origin, forwardScale, ent->pikmen[0]->s.origin);
-	VectorScale(forward, 1500, ent->pikmen[0]->velocity);
+	if (ent->pikmen[0]->classname == "gravitypikmin"){
+		ent->pikmen[0]->gravity = 0.00001;
+		VectorScale(forward, 800, ent->pikmen[0]->velocity);
+	}
+	else{
+		VectorScale(forward, 1500, ent->pikmen[0]->velocity);
+	}
 	ent->pikmen[0]->touch = pikmin_touch_player;
+
 	HandlePikminList(ent);
 	//yur mum end 1
 

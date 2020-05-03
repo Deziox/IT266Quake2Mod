@@ -1299,7 +1299,7 @@ void ClientBegin (edict_t *ent)
 {
 	int		i;
 	//char *pikminTypes[6] = { "icepikmin", "slidypikmin", "bombpikmin", "bouncypikmin", "poisonpikmin", "regularpikmin" };
-	char *pikminTypes[6] = { "icepikmin", "icepikmin", "icepikmin", "icepikmin", "icepikmin",  "icepikmin" };
+	char *pikminTypes[6] = { "gravitypikmin", "gravitypikmin", "gravitypikmin", "gravitypikmin", "gravitypikmin",  "gravitypikmin" };
 
 	ent->client = game.clients + (ent - g_edicts - 1);
 
@@ -1611,6 +1611,19 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 
 	level.current_entity = ent;
 	client = ent->client;
+
+	if (ent->frozen){
+		gi.dprintf("frozen timer 1: %d\n", ent->freezeTimer);
+		ent->freezeTimer -= ((int)level.time % 2 == 0 ? 1 : 0);
+		gi.dprintf("frozen timer 2: %d\n", ent->freezeTimer);
+		if (ent->freezeTimer <= 0){
+			ent->frozen = false;
+			ent->freezeTimer = 80;
+		}
+		else{
+			return;
+		}
+	}
 
 	if (level.intermissiontime)
 	{
