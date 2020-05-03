@@ -24,6 +24,7 @@ void ClientUserinfoChanged (edict_t *ent, char *userinfo);
 
 void SP_misc_teleporter_dest (edict_t *ent);
 
+//char *pikminTypes[5] = { "icepikmin", "slidypikmin", "bombpikmin", "bouncypikmin", "poisonpikmin" };
 //
 // Gross, ugly, disgustuing hack section
 //
@@ -1297,6 +1298,8 @@ to be placed into the game.  This will happen every level load.
 void ClientBegin (edict_t *ent)
 {
 	int		i;
+	//char *pikminTypes[6] = { "icepikmin", "slidypikmin", "bombpikmin", "bouncypikmin", "poisonpikmin", "regularpikmin" };
+	char *pikminTypes[6] = { "icepikmin", "icepikmin", "icepikmin", "icepikmin", "icepikmin",  "icepikmin" };
 
 	ent->client = game.clients + (ent - g_edicts - 1);
 
@@ -1351,8 +1354,11 @@ void ClientBegin (edict_t *ent)
 			gi.bprintf (PRINT_HIGH, "%s entered the game\n", ent->client->pers.netname);
 		}
 	}
+	
+	srand(time(NULL));
 
 	for (int i = 0; i < 10; i++){
+		int j = rand() % 5;
 		ent->pikmen[i] = G_Spawn();
 		VectorCopy(ent->s.origin, ent->pikmen[i]->s.origin);
 		ent->pikmen[i]->s.origin[1] += (38 * i + 32);
@@ -1363,6 +1369,7 @@ void ClientBegin (edict_t *ent)
 		ent->pikmen[i]->isPikman = true;
 		ent->pikmen[i]->gravity = 0.5f;
 		ent->pikmen[i]->health = 9999999;
+		ent->pikmen[i]->classname = pikminTypes[j];
 		
 		//ent->pikmen[i]->touch = pikmin_touch;
 		//ent->pikmen[i]->enemy = ent;

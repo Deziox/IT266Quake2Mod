@@ -817,26 +817,27 @@ BLASTER / HYPERBLASTER
 void pikmin_touch_player(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
 {
 	int		mod;
+	char *pikminTypes[6] = { "icepikmin", "slidypikmin", "bombpikmin", "bouncypikmin", "poisonpikmin","regularpikmin"};
 
 	//if (self->owner->client)
 	//	PlayerNoise(self->owner, self->s.origin, PNOISE_IMPACT);
 
 	if (other->takedamage && !other->isPikman)
 	{
-		//T_Damage(other, self, self->owner, self->velocity, self->s.origin, plane->normal, self->dmg, 1, DAMAGE_ENERGY, mod);
-		//for (int i = 31; i >= 0; i--){
-		//	if (other->pikmen[i]){
-		//		G_FreeEdict(other->pikmen[i]);
-		//		other->pikmen[i] = NULL;
-		//		break;
-		//	}
-		//}
-		if (other->pikmenSize > 0){
+		
+		if (self->classname == "icepikmin"){
+			other->frozen = true;
+			other->freezeTimer = 30;
+			gi.dprintf("frozen timer: %d\n", other->freezeTimer);
+			return;
+		}
+		if (other->pikmenSize > 1){
 			gi.dprintf("LOSE PIKMEN TEST: %d\n", other->pikmenSize);
 			LosePikmin(other);
 			//other->die(other, self->owner, self->owner, 99999, other->s.origin);
 		}
 		else{
+			LosePikmin(other);
 			if (self->pikmenSize == 128){
 				other->die(other, self->owner, self->owner, 99999, other->s.origin);
 			}
@@ -850,10 +851,12 @@ void pikmin_touch_player(edict_t *self, edict_t *other, cplane_t *plane, csurfac
 				other->gravity = 0.5f;
 				other->health = 9999999;
 				other->solid = SOLID_NOT;
+				other->classname = pikminTypes[(rand() % 6)];
 				PikminTest(self->owner);
-				self->pikmen[self->owner->pikmenSize] = other;
+				self->owner->pikmen[self->owner->pikmenSize] = other;
 				self->owner->pikmenSize += 1;
 				PikminTest(self->owner);
+
 			}
 		}
 	}
@@ -910,34 +913,8 @@ void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, in
 	VectorScale(forward, 20.0f, forwardScale);
 	//VectorAdd(ent->pikmen[0]->s.origin, forwardScale, ent->pikmen[0]->s.origin);
 	VectorScale(forward, 1500, ent->pikmen[0]->velocity);
-	//ent->pikmen[0]->think = player_pikmin_think;
-	//gi.dprintf("%s ENTITY TEST PRINT THING\n", ent->owner);
-	//test->team = ent->team;
-	//test->isPikman = true;
-	//test->gravity = 0.5f;
-	//edict_t *tempEnt = &g_edicts[0];
-	/*
-	for (int i = 0; i < globals.num_edicts; i++, tempEnt++)
-	{
-		if (!tempEnt)
-			continue;
-		if (!tempEnt->client)
-			continue;
-		if (tempEnt->classname == "player"){
-			test->owner = tempEnt;
-			break;
-		}
-		
-	}*/
-	//test->health = 999999;
 	ent->pikmen[0]->touch = pikmin_touch_player;
 	HandlePikminList(ent);
-	//SP_monster_soldier_x(test);
-	//gi.dprintf("%s Pikman TEST PRINT THING\n", test->team);
-	//gi.linkentity(test);
-	
-	//walkmonster_start(test);
-
 	//yur mum end 1
 
 	// send muzzle flash

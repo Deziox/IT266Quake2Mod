@@ -40,7 +40,6 @@ static int	sound_death;
 static int	sound_death_ss;
 static int	sound_cock;
 
-
 void soldier_idle (edict_t *self)
 {
 	if (random() > 0.8)
@@ -1271,20 +1270,20 @@ void SP_monster_soldier_x (edict_t *self)
 /*QUAKED monster_soldier_light (1 .5 0) (-16 -16 -24) (16 16 32) Ambush Trigger_Spawn Sight
 */
 void soldier_pikmin_init(edict_t *self){
-	if (!self->isPikman){
+		char *pikminTypes[6] = { "icepikmin", "slidypikmin", "bombpikmin", "bouncypikmin", "poisonpikmin", "regularpikmin" };
 		//self->pikmenSize = 0;
 		for (int i = 0; i < (rand() % 6 + 1); i++){
 			self->pikmen[i] = G_Spawn();
 			self->pikmen[i]->owner = self;
 			self->pikmen[i]->health = 99999;
 			self->pikmen[i]->isPikman = true;
+			self->pikmen[i]->classname = pikminTypes[(rand() % 6)];
 			VectorCopy(self->s.origin, self->pikmen[i]->s.origin);
 			SP_monster_soldier_x(self->pikmen[i]);
 			self->pikmenSize += 1;
 		}
 		gi.dprintf("PIKMEN SOLDIER SIZE: %d\n", self->pikmenSize);
 		PikminTest(self);
-	}
 }
 
 void SP_monster_soldier_light (edict_t *self)

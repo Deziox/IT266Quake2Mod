@@ -32,7 +32,7 @@ void pikmin_touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *su
 
 	if (other->takedamage && !other->isPikman)
 	{
-		if (other->pikmenSize > 0){
+		if (other->pikmenSize > 1){
 			gi.dprintf("LOSE PIKMEN TEST: %d\n", other->pikmenSize);
 			LosePikmin(other);
 		}
@@ -41,6 +41,7 @@ void pikmin_touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *su
 				other->die(other, self->owner, self->owner, 99999, other->s.origin);
 			}
 			else{
+				LosePikmin(other);
 				VectorSet(self->mins, -8, -8, -7);
 				VectorSet(self->maxs, 8, 8, 8);
 				other->s.modelindex = gi.modelindex("players/pikmin/pikmin1.md2");
@@ -475,7 +476,7 @@ void M_MoveFrame (edict_t *self)
 		}
 		else
 		{
-			if (!(self->monsterinfo.aiflags & AI_HOLD_FRAME))
+			if (!(self->monsterinfo.aiflags & AI_HOLD_FRAME) && (!self->frozen))
 			{
 				self->s.frame++;
 				if (self->s.frame > move->lastframe)
@@ -486,7 +487,7 @@ void M_MoveFrame (edict_t *self)
 
 	index = self->s.frame - move->firstframe;
 	if (move->frame[index].aifunc)
-		if (!(self->monsterinfo.aiflags & AI_HOLD_FRAME))
+		if (!(self->monsterinfo.aiflags & AI_HOLD_FRAME)  && (!self->frozen))
 			move->frame[index].aifunc (self, move->frame[index].dist * self->monsterinfo.scale);
 		else
 			move->frame[index].aifunc (self, 0);
@@ -498,7 +499,18 @@ void M_MoveFrame (edict_t *self)
 
 void monster_think (edict_t *self)
 {
-	M_MoveFrame (self);
+	if (self->frozen){ 
+		gi.dprintf("frozen timer 1: %d\n", self->freezeTimer);
+		self->freezeTimer -= ((int)level.time % 2 == 0 ? 1:0);
+		gi.dprintf("frozen timer 2: %d\n", self->freezeTimer);
+		if (self->freezeTimer <= 0){
+			self->frozen = false;
+			self->freezeTimer = 30;
+		}
+	}
+
+	M_MoveFrame(self);
+
 	if (self->linkcount != self->monsterinfo.linkcount)
 	{
 		self->monsterinfo.linkcount = self->linkcount;

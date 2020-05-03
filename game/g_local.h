@@ -1113,5 +1113,8 @@ struct edict_s
 	qboolean isPikman;
 	edict_t     *pikmen[128];
 	int			pikmenSize;
+
+	qboolean frozen;
+	int freezeTimer;
 };
 
