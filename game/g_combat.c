@@ -551,12 +551,46 @@ void T_RadiusDamage (edict_t *inflictor, edict_t *attacker, float damage, edict_
 	vec3_t	v;
 	vec3_t	dir;
 
+	char *pikminTypes[6] = { "icepikmin", "gravitypikmin", "bombpikmin", "speedpikmin", "poisonpikmin", "regularpikmin" };
+
 	while ((ent = findradius(ent, inflictor->s.origin, radius)) != NULL)
 	{
 		if (ent == ignore)
 			continue;
 		if (!ent->takedamage)
 			continue;
+
+		if (inflictor->isPikman && ent->takedamage && !ent->isPikman){
+			gi.dprintf("BOMBPIKMIN TESTER\nBOMBPIKMIN TESTER\nBOMBPIKMIN TESTER\n");
+			if (ent->pikmenSize > 1){
+				gi.dprintf("LOSE PIKMEN TEST: %d\n", ent->pikmenSize);
+				LosePikmin(ent);
+				//other->die(other, self->owner, self->owner, 99999, other->s.origin);
+			}
+			else{
+				LosePikmin(ent);
+				if (inflictor->owner->pikmenSize == 128){
+					ent->die(ent, inflictor->owner, inflictor->owner, 99999, ent->s.origin);
+				}
+				else{
+					VectorSet(inflictor->mins, -8, -8, -7);
+					VectorSet(inflictor->maxs, 8, 8, 8);
+					ent->s.modelindex = gi.modelindex("players/pikmin/pikmin1.md2");
+					ent->isPikman = true;
+					ent->owner = inflictor;
+					ent->touch = NULL;
+					ent->gravity = 0.5f;
+					ent->health = 9999999;
+					ent->solid = SOLID_NOT;
+					ent->classname = pikminTypes[(rand() % 6)];
+					PikminTest(inflictor->owner);
+					inflictor->owner->pikmen[inflictor->owner->pikmenSize] = ent;
+					inflictor->owner->pikmenSize += 1;
+					PikminTest(inflictor->owner);
+
+				}
+			}
+		}
 
 		VectorAdd (ent->mins, ent->maxs, v);
 		VectorMA (ent->s.origin, 0.5, v, v);
@@ -569,7 +603,7 @@ void T_RadiusDamage (edict_t *inflictor, edict_t *attacker, float damage, edict_
 			if (CanDamage (ent, inflictor))
 			{
 				VectorSubtract (ent->s.origin, inflictor->s.origin, dir);
-				T_Damage (ent, inflictor, attacker, dir, inflictor->s.origin, vec3_origin, (int)points, (int)points, DAMAGE_RADIUS, mod);
+				T_Damage(ent, inflictor, attacker, dir, inflictor->s.origin, vec3_origin, (int)points, (int)points, DAMAGE_RADIUS, mod);
 			}
 		}
 	}

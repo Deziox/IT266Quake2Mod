@@ -817,7 +817,7 @@ BLASTER / HYPERBLASTER
 void pikmin_touch_player(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
 {
 	int		mod;
-	char *pikminTypes[6] = { "icepikmin", "slidypikmin", "bombpikmin", "bouncypikmin", "poisonpikmin","regularpikmin"};
+	char *pikminTypes[6] = { "icepikmin", "gravitypikmin", "bombpikmin", "speedpikmin", "poisonpikmin", "regularpikmin" };
 
 	//if (self->owner->client)
 	//	PlayerNoise(self->owner, self->s.origin, PNOISE_IMPACT);
@@ -830,7 +830,13 @@ void pikmin_touch_player(edict_t *self, edict_t *other, cplane_t *plane, csurfac
 			other->freezeTimer = 30;
 			gi.dprintf("frozen timer: %d\n", other->freezeTimer);
 			return;
+		}else if (self->classname == "poisonpikmin" && !other->poisoned){
+			other->poisoned = true;
+			other->poisonTimer = 30;
+			gi.dprintf("poison timer: %d\n", other->poisonTimer);
+			return;
 		}
+
 		if (other->pikmenSize > 1){
 			gi.dprintf("LOSE PIKMEN TEST: %d\n", other->pikmenSize);
 			LosePikmin(other);
@@ -838,7 +844,7 @@ void pikmin_touch_player(edict_t *self, edict_t *other, cplane_t *plane, csurfac
 		}
 		else{
 			LosePikmin(other);
-			if (self->pikmenSize == 128){
+			if (self->owner->pikmenSize == 128){
 				other->die(other, self->owner, self->owner, 99999, other->s.origin);
 			}
 			else{
@@ -860,8 +866,13 @@ void pikmin_touch_player(edict_t *self, edict_t *other, cplane_t *plane, csurfac
 			}
 		}
 	}
-	else
-	{
+	else if (self->classname == "bombpikmin"){
+		T_RadiusDamage(self, self, 0, self, 100, MOD_ROCKET);
+		gi.WriteByte(svc_temp_entity);
+		gi.WriteByte(TE_ROCKET_EXPLOSION);
+		gi.WritePosition(self->s.origin);
+		gi.multicast(self->s.origin, MULTICAST_PHS);
+	}else{
 		gi.WriteByte(svc_temp_entity);
 		gi.WriteByte(TE_BLASTER);
 		gi.WritePosition(self->s.origin);
@@ -916,8 +927,13 @@ void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, in
 		ent->pikmen[0]->gravity = 0.00001;
 		VectorScale(forward, 800, ent->pikmen[0]->velocity);
 	}
+	else if (ent->pikmen[0]->classname == "speedpikmin"){
+		ent->pikmen[0]->movetype = MOVETYPE_BOUNCE;
+		ent->pikmen[0]->gravity = 0.5;
+		VectorScale(forward, 2000, ent->pikmen[0]->velocity);
+	}
 	else{
-		VectorScale(forward, 1500, ent->pikmen[0]->velocity);
+		VectorScale(forward, 1000, ent->pikmen[0]->velocity);
 	}
 	ent->pikmen[0]->touch = pikmin_touch_player;
 

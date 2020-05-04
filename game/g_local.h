@@ -1116,5 +1116,8 @@ struct edict_s
 
 	qboolean frozen;
 	int freezeTimer;
+
+	qboolean poisoned;
+	int poisonTimer;
 };
 

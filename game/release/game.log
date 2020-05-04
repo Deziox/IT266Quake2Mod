@@ -1,20 +1,28 @@
-﻿Build started 5/3/2020 4:12:06 PM.
+﻿Build started 5/3/2020 5:49:34 PM.
      1>Project "C:\Users\Danzel\git\quake2-full\game\game.vcxproj" on node 2 (Build target(s)).
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V120\Microsoft.CppBuild.targets(357,5): warning MSB8004: Output Directory does not end with a trailing slash.  This build instance will add the slash as it is required to allow proper evaluation of the Output Directory.
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /Z7 /nologo /W4 /WX- /O2 /Oy- /D WIN32 /D NDEBUG /D _WINDOWS /D _VC80_UPGRADE=0x0600 /D _WINDLL /GF /Gm- /EHsc /MT /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo".\release\\" /Fd".\release\vc120.pdb" /Gd /TC /analyze- /errorReport:prompt g_monster.c
-         g_monster.c
-     1>g_monster.c(35): warning C4130: '==' : logical operation on address of string constant
-     1>g_monster.c(44): warning C4013: 'LosePikmin' undefined; assuming extern returning int
-     1>g_monster.c(26): warning C4100: 'surf' : unreferenced formal parameter
-     1>g_monster.c(28): warning C4101: 'mod' : unreferenced local variable
-     1>g_monster.c(93): warning C4130: '==' : logical operation on address of string constant
-     1>g_monster.c(101): warning C4013: 'HandlePikminList' undefined; assuming extern returning int
-     1>g_monster.c(120): warning C4130: '==' : logical operation on address of string constant
-     1>g_monster.c(147): warning C4130: '==' : logical operation on address of string constant
-     1>g_monster.c(197): warning C4100: 'kick' : unreferenced formal parameter
-     1>g_monster.c(555): warning C4100: 'other' : unreferenced formal parameter
-     1>g_monster.c(604): warning C4100: 'other' : unreferenced formal parameter
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /Z7 /nologo /W4 /WX- /O2 /Oy- /D WIN32 /D NDEBUG /D _WINDOWS /D _VC80_UPGRADE=0x0600 /D _WINDLL /GF /Gm- /EHsc /MT /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo".\release\\" /Fd".\release\vc120.pdb" /Gd /TC /analyze- /errorReport:prompt p_client.c
+         p_client.c
+     1>p_client.c(47): warning C4127: conditional expression is constant
+     1>p_client.c(71): warning C4100: 'self' : unreferenced formal parameter
+     1>p_client.c(180): warning C4100: 'damage' : unreferenced formal parameter
+     1>p_client.c(180): warning C4100: 'kick' : unreferenced formal parameter
+     1>p_client.c(180): warning C4100: 'other' : unreferenced formal parameter
+     1>p_client.c(180): warning C4100: 'self' : unreferenced formal parameter
+     1>p_client.c(212): warning C4100: 'inflictor' : unreferenced formal parameter
+     1>p_client.c(502): warning C4100: 'point' : unreferenced formal parameter
+     1>p_client.c(847): warning C4127: conditional expression is constant
+     1>p_client.c(932): warning C4100: 'point' : unreferenced formal parameter
+     1>p_client.c(932): warning C4100: 'attacker' : unreferenced formal parameter
+     1>p_client.c(932): warning C4100: 'inflictor' : unreferenced formal parameter
+     1>p_client.c(1376): warning C4013: 'SP_monster_soldier_x' undefined; assuming extern returning int
+     1>p_client.c(1405): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+     1>p_client.c(1410): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\include\string.h(195) : see declaration of 'strncpy'
+     1>p_client.c(1450): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\include\string.h(195) : see declaration of 'strncpy'
+     1>p_client.c(1633): warning C4013: 'LosePikmin' undefined; assuming extern returning int
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Program Files (x86)\Steam\steamapps\common\Quake 2\coronavirus\gamex86.dll" /INCREMENTAL:NO /NOLOGO winmm.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /DEF:".\game.def" /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:"C:\Program Files (x86)\Steam\steamapps\common\Quake 2\coronavirus\gamex86.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /BASE:"0x20000000" /DYNAMICBASE /NXCOMPAT /IMPLIB:".\..\release\gamex86.lib" /MACHINE:X86 /SAFESEH /DLL .\release\g_ai.obj
          .\release\g_chase.obj
@@ -70,4 +78,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.91
+Time Elapsed 00:00:01.25

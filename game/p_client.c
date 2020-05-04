@@ -1298,8 +1298,8 @@ to be placed into the game.  This will happen every level load.
 void ClientBegin (edict_t *ent)
 {
 	int		i;
-	//char *pikminTypes[6] = { "icepikmin", "slidypikmin", "bombpikmin", "bouncypikmin", "poisonpikmin", "regularpikmin" };
-	char *pikminTypes[6] = { "gravitypikmin", "gravitypikmin", "gravitypikmin", "gravitypikmin", "gravitypikmin",  "gravitypikmin" };
+	//char *pikminTypes[6] = { "icepikmin", "gravitypikmin", "bombpikmin", "speedpikmin", "poisonpikmin", "regularpikmin" };
+	char *pikminTypes[6] = { "poisonpikmin", "poisonpikmin", "poisonpikmin", "poisonpikmin", "poisonpikmin", "poisonpikmin" };
 
 	ent->client = game.clients + (ent - g_edicts - 1);
 
@@ -1622,6 +1622,26 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 		}
 		else{
 			return;
+		}
+	}
+	if (ent->poisoned){
+		if ((int)level.time % 2 == 0){
+			ent->poisonTimer -= 1;
+			if (ent->poisonTimer % 10 == 0){
+				if (ent->pikmenSize > 1){
+					gi.dprintf("LOSE PIKMEN TEST: %d\n", ent->pikmenSize);
+					LosePikmin(ent);
+					//other->die(other, self->owner, self->owner, 99999, other->s.origin);
+				}
+				else{
+					LosePikmin(ent);
+					ent->die(ent,ent,ent, 99999, ent->s.origin);
+				}
+			}
+		}
+		if (ent->poisonTimer <= 0){
+			ent->poisoned = false;
+			ent->poisonTimer = 30;
 		}
 	}
 

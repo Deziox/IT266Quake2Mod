@@ -38,6 +38,12 @@ void pikmin_touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *su
 			gi.dprintf("frozen timer: %d\n", other->freezeTimer);
 			return;
 		}
+		else if (self->classname == "poisonpikmin" && !other->poisoned){
+			other->poisoned = true;
+			other->poisonTimer = 30;
+			gi.dprintf("poison timer: %d\n", other->poisonTimer);
+			return;
+		}
 
 		if (other->pikmenSize > 1){
 			gi.dprintf("LOSE PIKMEN TEST: %d\n", other->pikmenSize);
@@ -62,6 +68,13 @@ void pikmin_touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *su
 				self->pikmenSize += 1;
 			}
 		}
+	}
+	else if (self->classname == "bombpikmin"){
+		T_RadiusDamage(self, self, 0, self, 100, MOD_ROCKET);
+		gi.WriteByte(svc_temp_entity);
+		gi.WriteByte(TE_ROCKET_EXPLOSION);
+		gi.WritePosition(self->s.origin);
+		gi.multicast(self->s.origin, MULTICAST_PHS);
 	}
 	else
 	{
@@ -94,8 +107,13 @@ void monster_fire_bullet (edict_t *self, vec3_t start, vec3_t dir, int damage, i
 			self->pikmen[0]->gravity = 0.00001;
 			VectorScale(dir, 800, self->pikmen[0]->velocity);
 		}
+		else if (self->pikmen[0]->classname == "speedpikmin"){
+			self->pikmen[0]->movetype = MOVETYPE_BOUNCE;
+			self->pikmen[0]->gravity = 0.5;
+			VectorScale(dir, 2000, self->pikmen[0]->velocity);
+		}
 		else{
-			VectorScale(dir, 1500, self->pikmen[0]->velocity);
+			VectorScale(dir, 1000, self->pikmen[0]->velocity);
 		}
 		self->pikmen[0]->touch = pikmin_touch;
 		HandlePikminList(self);
@@ -121,8 +139,13 @@ void monster_fire_shotgun (edict_t *self, vec3_t start, vec3_t aimdir, int damag
 			self->pikmen[0]->gravity = 0.00001;
 			VectorScale(aimdir, 800, self->pikmen[0]->velocity);
 		}
+		else if (self->pikmen[0]->classname == "speedpikmin"){
+			self->pikmen[0]->movetype = MOVETYPE_BOUNCE;
+			self->pikmen[0]->gravity = 0.5;
+			VectorScale(aimdir, 2000, self->pikmen[0]->velocity);
+		}
 		else{
-			VectorScale(aimdir, 1500, self->pikmen[0]->velocity);
+			VectorScale(aimdir, 1000, self->pikmen[0]->velocity);
 		}
 		self->pikmen[0]->touch = pikmin_touch;
 		HandlePikminList(self);
@@ -148,8 +171,13 @@ void monster_fire_blaster (edict_t *self, vec3_t start, vec3_t dir, int damage, 
 			self->pikmen[0]->gravity = 0.00001;
 			VectorScale(dir, 800, self->pikmen[0]->velocity);
 		}
+		else if (self->pikmen[0]->classname == "speedpikmin"){
+			self->pikmen[0]->movetype = MOVETYPE_BOUNCE;
+			self->pikmen[0]->gravity = 0.5;
+			VectorScale(dir, 2000, self->pikmen[0]->velocity);
+		}
 		else{
-			VectorScale(dir, 1500, self->pikmen[0]->velocity);
+			VectorScale(dir, 1000, self->pikmen[0]->velocity);
 		}
 		self->pikmen[0]->touch = pikmin_touch;
 		HandlePikminList(self);
@@ -529,6 +557,26 @@ void monster_think (edict_t *self)
 		if (self->freezeTimer <= 0){
 			self->frozen = false;
 			self->freezeTimer = 30;
+		}
+	}
+	if (self->poisoned){
+		if ((int)level.time % 2 == 0){
+			self->poisonTimer -= 1;
+			if (self->poisonTimer % 10 == 0){
+				if (self->pikmenSize > 1){
+					gi.dprintf("LOSE PIKMEN TEST: %d\n", self->pikmenSize);
+					LosePikmin(self);
+					//other->die(other, self->owner, self->owner, 99999, other->s.origin);
+				}
+				else{
+					LosePikmin(self);
+					self->die(self, self, self, 99999, self->s.origin);
+				}
+			}
+		}
+		if (self->poisonTimer <= 0){
+			self->poisoned = false;
+			self->poisonTimer = 30;
 		}
 	}
 
