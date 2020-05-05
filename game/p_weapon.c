@@ -827,42 +827,44 @@ void pikmin_touch_player(edict_t *self, edict_t *other, cplane_t *plane, csurfac
 		
 		if (self->classname == "icepikmin" && !other->frozen){
 			other->frozen = true;
-			other->freezeTimer = 30;
+			other->freezeTimer = 30 * self->owner->pikminDamage;
 			gi.dprintf("frozen timer: %d\n", other->freezeTimer);
 			return;
 		}else if (self->classname == "poisonpikmin" && !other->poisoned){
 			other->poisoned = true;
-			other->poisonTimer = 30;
+			other->poisonTimer = 30 * self->owner->pikminDamage;
+			other->pikminDamage = self->pikminDamage;
 			gi.dprintf("poison timer: %d\n", other->poisonTimer);
 			return;
 		}
-
-		if (other->pikmenSize > 1){
-			gi.dprintf("LOSE PIKMEN TEST: %d\n", other->pikmenSize);
-			LosePikmin(other);
-			//other->die(other, self->owner, self->owner, 99999, other->s.origin);
-		}
-		else{
-			LosePikmin(other);
-			if (self->owner->pikmenSize == 128){
-				other->die(other, self->owner, self->owner, 99999, other->s.origin);
+		for (int i = 0; i < self->owner->pikminDamage; i++){
+			if (other->pikmenSize > 1){
+				gi.dprintf("LOSE PIKMEN TEST: %d\n", other->pikmenSize);
+				LosePikmin(other);
+				//other->die(other, self->owner, self->owner, 99999, other->s.origin);
 			}
 			else{
-				VectorSet(self->mins, -8, -8, -7);
-				VectorSet(self->maxs, 8, 8, 8);
-				other->s.modelindex = gi.modelindex("players/pikmin/pikmin1.md2");
-				other->isPikman = true;
-				other->owner = self;
-				other->touch = NULL;
-				other->gravity = 0.5f;
-				other->health = 9999999;
-				other->solid = SOLID_NOT;
-				other->classname = pikminTypes[(rand() % 6)];
-				PikminTest(self->owner);
-				self->owner->pikmen[self->owner->pikmenSize] = other;
-				self->owner->pikmenSize += 1;
-				PikminTest(self->owner);
+				LosePikmin(other);
+				if (self->owner->pikmenSize == 128){
+					other->die(other, self->owner, self->owner, 99999, other->s.origin);
+				}
+				else{
+					VectorSet(self->mins, -8, -8, -7);
+					VectorSet(self->maxs, 8, 8, 8);
+					other->s.modelindex = gi.modelindex("players/pikmin/pikmin1.md2");
+					other->isPikman = true;
+					other->owner = self;
+					other->touch = NULL;
+					other->gravity = 0.5f;
+					other->health = 9999999;
+					other->solid = SOLID_NOT;
+					other->classname = pikminTypes[(rand() % 6)];
+					PikminTest(self->owner);
+					self->owner->pikmen[self->owner->pikmenSize] = other;
+					self->owner->pikmenSize += 1;
+					PikminTest(self->owner);
 
+				}
 			}
 		}
 	}
@@ -884,7 +886,9 @@ void pikmin_touch_player(edict_t *self, edict_t *other, cplane_t *plane, csurfac
 	}
 
 	gi.dprintf("COLLISION TEST %s\n", other->classname);
-	self->touch = NULL;
+	if (self->classname != "bouncypikmin" && self->classname != "gravitypikmin"){
+		self->touch = NULL;
+	}
 	//self->think = monster_think;
 	//G_FreeEdict(self);
 }
@@ -925,19 +929,22 @@ void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, in
 	//VectorAdd(ent->pikmen[0]->s.origin, forwardScale, ent->pikmen[0]->s.origin);
 	if (ent->pikmen[0]->classname == "gravitypikmin"){
 		ent->pikmen[0]->gravity = 0.00001;
-		VectorScale(forward, 800, ent->pikmen[0]->velocity);
+		VectorScale(forward, 400 * ent->throwSpeed, ent->pikmen[0]->velocity);
 	}
 	else if (ent->pikmen[0]->classname == "speedpikmin"){
 		ent->pikmen[0]->movetype = MOVETYPE_BOUNCE;
 		ent->pikmen[0]->gravity = 0.5;
-		VectorScale(forward, 2000, ent->pikmen[0]->velocity);
+		VectorScale(forward, 2000 * ent->throwSpeed, ent->pikmen[0]->velocity);
 	}
 	else{
-		VectorScale(forward, 1000, ent->pikmen[0]->velocity);
+		VectorScale(forward, 1000 * ent->throwSpeed, ent->pikmen[0]->velocity);
 	}
 	ent->pikmen[0]->touch = pikmin_touch_player;
-
+	HelpComputer(ent);
 	HandlePikminList(ent);
+	gi.dprintf("CURRENT PIKMIN: %s\n", ent->pikmen[0]->classname);
+	//ent->client->ps.stats[STAT_LAYOUTS] = 1;
+
 	//yur mum end 1
 
 	// send muzzle flash

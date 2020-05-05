@@ -454,8 +454,12 @@ qboolean Add_Ammo (edict_t *ent, gitem_t *item, int count)
 
 	if (item->tag == AMMO_BULLETS)
 		max = ent->client->pers.max_bullets;
-	else if (item->tag == AMMO_SHELLS)
+	else if (item->tag == AMMO_SHELLS){
 		max = ent->client->pers.max_shells;
+		//yur dad
+		ent->throwSpeed = 2;
+		ent->throwTimer = 80;
+	}
 	else if (item->tag == AMMO_ROCKETS)
 		max = ent->client->pers.max_rockets;
 	else if (item->tag == AMMO_GRENADES)
@@ -540,6 +544,7 @@ void Drop_Ammo (edict_t *ent, gitem_t *item)
 
 void MegaHealth_think (edict_t *self)
 {
+	
 	if (self->owner->health > self->owner->max_health)
 	{
 		self->nextthink = level.time + 1;
@@ -557,7 +562,7 @@ qboolean Pickup_Health (edict_t *ent, edict_t *other)
 {
 	if (!(ent->style & HEALTH_IGNORE_MAX))
 		if (other->health >= other->max_health)
-			return false;
+			return true;
 
 	other->health += ent->count;
 
@@ -621,6 +626,17 @@ qboolean Pickup_Armor (edict_t *ent, edict_t *other)
 	// handle armor shards specially
 	if (ent->item->tag == ARMOR_SHARD)
 	{
+		//yur mum
+		gi.dprintf("GOT HERE ARMOR SHARD\n");
+		if (other->damageTimer == 2){
+			return false;
+		}
+		else{
+			other->damageTimer = 2;
+			other->damageTimer = 60;
+			HelpComputer(ent);
+		}
+		
 		if (!old_armor_index)
 			other->client->pers.inventory[jacket_armor_index] = 2;
 		else
@@ -787,10 +803,15 @@ void Touch_Item (edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *surf
 
 		if (ent->item->pickup == Pickup_Health)
 		{
-			if (ent->count == 2)
+			if (ent->count == 2){
 				gi.sound(other, CHAN_ITEM, gi.soundindex("items/s_health.wav"), 1, ATTN_NORM, 0);
-			else if (ent->count == 10)
+				//yur mum
+				AddPikmin(other, 1);
+			}
+			else if (ent->count == 10){
 				gi.sound(other, CHAN_ITEM, gi.soundindex("items/n_health.wav"), 1, ATTN_NORM, 0);
+				AddPikmin(other, 5);
+			}
 			else if (ent->count == 25)
 				gi.sound(other, CHAN_ITEM, gi.soundindex("items/l_health.wav"), 1, ATTN_NORM, 0);
 			else // (ent->count == 100)

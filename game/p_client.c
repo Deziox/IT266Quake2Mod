@@ -1298,8 +1298,8 @@ to be placed into the game.  This will happen every level load.
 void ClientBegin (edict_t *ent)
 {
 	int		i;
-	//char *pikminTypes[6] = { "icepikmin", "gravitypikmin", "bombpikmin", "speedpikmin", "poisonpikmin", "regularpikmin" };
-	char *pikminTypes[6] = { "poisonpikmin", "poisonpikmin", "poisonpikmin", "poisonpikmin", "poisonpikmin", "poisonpikmin" };
+	char *pikminTypes[6] = { "icepikmin", "gravitypikmin", "bombpikmin", "speedpikmin", "poisonpikmin", "regularpikmin" };
+	//char *pikminTypes[6] = { "poisonpikmin", "poisonpikmin", "poisonpikmin", "poisonpikmin", "poisonpikmin", "poisonpikmin" };
 
 	ent->client = game.clients + (ent - g_edicts - 1);
 
@@ -1356,8 +1356,9 @@ void ClientBegin (edict_t *ent)
 	}
 	
 	srand(time(NULL));
-
-	for (int i = 0; i < 10; i++){
+	ent->pikminDamage = 1;
+	ent->throwSpeed = 1;
+	for (int i = 0; i < 8; i++){
 		int j = rand() % 5;
 		ent->pikmen[i] = G_Spawn();
 		VectorCopy(ent->s.origin, ent->pikmen[i]->s.origin);
@@ -1379,6 +1380,12 @@ void ClientBegin (edict_t *ent)
 		walkmonster_start(ent->pikmen[i]);
 		ent->pikmenSize += 1;
 	}
+
+	ent->client->showinventory = false;
+	ent->client->showscores = false;
+	ent->client->showhelp = true;
+	ent->client->pers.helpchanged = 0;
+	HelpComputer(ent);
 
 	// make sure all view stuff is valid
 	ClientEndServerFrame (ent);
@@ -1619,6 +1626,7 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 		if (ent->freezeTimer <= 0){
 			ent->frozen = false;
 			ent->freezeTimer = 80;
+			HelpComputer(ent);
 		}
 		else{
 			return;
@@ -1642,6 +1650,21 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 		if (ent->poisonTimer <= 0){
 			ent->poisoned = false;
 			ent->poisonTimer = 30;
+			HelpComputer(ent);
+		}
+	}
+
+	if (ent->pikminDamage == 2){
+		
+	}
+
+	if (ent->throwSpeed == 2){
+		if ((int)level.time % 2 == 0){
+			ent->throwTimer -= 1;
+		}
+		if (ent->throwTimer <= 0){
+			ent->throwSpeed = 1;
+			ent->throwTimer = 80;
 		}
 	}
 

@@ -314,13 +314,13 @@ void HelpComputer (edict_t *ent)
 		sk = "hard+";
 
 	// send the layout
-	Com_sprintf (string, sizeof(string),
+	/*Com_sprintf (string, sizeof(string),
 		"xv 32 yv 8 picn help "			// background
 		"xv 202 yv 12 string2 \"%s\" "		// skill
 		"xv 0 yv 24 cstring2 \"%s\" "		// level name
 		"xv 0 yv 54 cstring2 \"%s\" "		// help 1
 		"xv 0 yv 110 cstring2 \"%s\" "		// help 2
-		"xv 50 yv 164 string2 \" kills     goals    secrets\" "
+		"xv 50 yv 164 string2 \" PIKMIN     goals    secrets\" "
 		"xv 50 yv 172 string2 \"%3i/%3i     %i/%i       %i/%i\" ", 
 		sk,
 		level.level_name,
@@ -328,13 +328,49 @@ void HelpComputer (edict_t *ent)
 		game.helpmessage2,
 		level.killed_monsters, level.total_monsters, 
 		level.found_goals, level.total_goals,
-		level.found_secrets, level.total_secrets);
+		level.found_secrets, level.total_secrets);*/
+
+	char *pikminName = "ya ded";
+
+	if (ent->pikmen[1]){
+		pikminName = ent->pikmen[1]->classname;
+	}
+	else if (ent->pikmen[0]){
+		pikminName = ent->pikmen[0]->classname;
+	}
+
+	char *effect = "";
+	int effectTimer = 0;
+
+	if (ent->frozen){
+		effect = "You're frozen lol";
+	}
+	else if (ent->poisoned){
+		effect = "You're poisoned boss";
+	}else if(ent->pikminDamage == 2){
+		effect = "DOUBLE DAMAGE WHOO";
+	}
+	else{
+		effect = "You're Fine";
+	}
+
+	Com_sprintf(string, sizeof(string),
+		"xv -330 yv 200 picn tag2 "			// background
+		"xv -110 yv 485 string2 \"%s\" "		// pikmin numbers
+		"xv -325 yv 190 string2 \"%s\" "		// Effect
+		"xv -325 yv 210 string2 \"%s\" "		// Effect timer
+		"xv -330 yv 150 picn tag1 "
+		"xv -325 yv 140 string2 \"Next Pikmin\" "
+		"xv -325 yv 160 string2 \"%s\" ",
+		"Number of Pikmen:",
+		"Current Effect",
+		effect,
+		pikminName);
 
 	gi.WriteByte (svc_layout);
 	gi.WriteString (string);
 	gi.unicast (ent, true);
 }
-
 
 /*
 ==================
@@ -384,7 +420,7 @@ void G_SetStats (edict_t *ent)
 	// health
 	//
 	ent->client->ps.stats[STAT_HEALTH_ICON] = level.pic_health;
-	ent->client->ps.stats[STAT_HEALTH] = ent->health;
+	ent->client->ps.stats[STAT_HEALTH] = ent->pikmenSize;
 
 	//
 	// ammo
@@ -393,6 +429,7 @@ void G_SetStats (edict_t *ent)
 	{
 		ent->client->ps.stats[STAT_AMMO_ICON] = 0;
 		ent->client->ps.stats[STAT_AMMO] = 0;
+
 	}
 	else
 	{

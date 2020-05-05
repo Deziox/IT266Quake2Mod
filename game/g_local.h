@@ -1119,5 +1119,11 @@ struct edict_s
 
 	qboolean poisoned;
 	int poisonTimer;
+
+	int pikminDamage;
+	int damageTimer;
+
+	int throwSpeed;
+	int throwTimer;
 };
 

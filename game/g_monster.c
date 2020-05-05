@@ -36,12 +36,16 @@ void pikmin_touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *su
 			other->frozen = true;
 			other->freezeTimer = 80;
 			gi.dprintf("frozen timer: %d\n", other->freezeTimer);
+			if (other->client)
+				HelpComputer(other);
 			return;
 		}
 		else if (self->classname == "poisonpikmin" && !other->poisoned){
 			other->poisoned = true;
 			other->poisonTimer = 30;
 			gi.dprintf("poison timer: %d\n", other->poisonTimer);
+			if (other->client)
+				HelpComputer(other);
 			return;
 		}
 
@@ -89,7 +93,9 @@ void pikmin_touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *su
 	}
 
 	gi.dprintf("COLLISION TEST %s\n", other->classname);
-	self->touch = NULL;
+	if (self->classname != "bouncypikmin" && self->classname != "gravitypikmin"){
+		self->touch = NULL;
+	}
 	//self->think = monster_think;
 	//G_FreeEdict(self);
 }
@@ -529,11 +535,13 @@ void M_MoveFrame (edict_t *self)
 		}
 		else
 		{
-			if (!(self->monsterinfo.aiflags & AI_HOLD_FRAME) && (!self->frozen))
+			if (!(self->monsterinfo.aiflags & AI_HOLD_FRAME))
 			{
-				self->s.frame++;
-				if (self->s.frame > move->lastframe)
-					self->s.frame = move->firstframe;
+				if (!self->frozen || (self->isPikman && !self->owner->frozen && self->owner->pikminDamage != 2)){
+					self->s.frame++;
+					if (self->s.frame > move->lastframe)
+						self->s.frame = move->firstframe;
+				}
 			}
 		}
 	}
@@ -566,6 +574,11 @@ void monster_think (edict_t *self)
 				if (self->pikmenSize > 1){
 					gi.dprintf("LOSE PIKMEN TEST: %d\n", self->pikmenSize);
 					LosePikmin(self);
+					gi.WriteByte(svc_temp_entity);
+					gi.WriteByte(TE_GREENBLOOD);
+					gi.WritePosition(self->s.origin);
+					gi.WriteDir(self->s.origin);
+					gi.multicast(self->s.origin, MULTICAST_PVS);
 					//other->die(other, self->owner, self->owner, 99999, other->s.origin);
 				}
 				else{

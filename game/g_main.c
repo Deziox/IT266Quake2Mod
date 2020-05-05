@@ -365,6 +365,31 @@ void HandlePikminList(edict_t *ent){
 	}
 }
 
+qboolean AddPikmin(edict_t *ent,int howmany){
+	if (ent->pikmenSize + howmany >= 128) return false;
+	char *pikminTypes[6] = { "icepikmin", "gravitypikmin", "bombpikmin", "speedpikmin", "poisonpikmin", "regularpikmin" };
+	for (int j = 0; j < howmany; j++){
+		int i = ent->pikmenSize;
+		ent->pikmen[i] = G_Spawn();
+		VectorCopy(ent->s.origin, ent->pikmen[i]->s.origin);
+		//ent->pikmen[i]->s.origin[1] += (38);
+		//ent->pikmen[i]->s.origin[0] -= (10 * i + 32);
+		ent->pikmen[i]->s.origin[2] += 30 + 35*j;
+		ent->pikmen[i]->owner = ent;
+		ent->pikmen[i]->isPikman = true;
+		ent->pikmen[i]->gravity = 0.5f;
+		ent->pikmen[i]->health = 9999999;
+		ent->pikmen[i]->classname = pikminTypes[j];
+
+		SP_monster_soldier_x(ent->pikmen[i]);
+		gi.linkentity(ent->pikmen[i]);
+		walkmonster_start(ent->pikmen[i]);
+		ent->pikmenSize += 1;
+		if (ent->pikmenSize >= 128) return true;
+	}
+	return true;
+}
+
 void LosePikmin(edict_t *ent){
 	if (ent->pikmenSize <= 0){
 		if (ent->pikmenSize < 0){
