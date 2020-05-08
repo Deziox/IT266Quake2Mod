@@ -1,5 +1,5 @@
-# Quake II Mod
-
+# Quake II Mod: <br/> PIKMAN
+![Image of a pikman](https://github.com/Deziox/IT266Quake2Mod/blob/master/c1fb87a0f303638935450226b5746bbd2013c327v2_hq.jpg)
 # STORY:
 You found some bizarre creatures when you woke up on an alien planet. <br />
 They wanna help you escape, but their friends (who are apparently zombies) are trying to kill you.<br />
